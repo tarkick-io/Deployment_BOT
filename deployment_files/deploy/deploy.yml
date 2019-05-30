@@ -1,0 +1,18 @@
+- hosts: localhost
+  vars:
+    Name: ""
+    ImageName: ""
+    imageTag: ""
+  #remote_user: ansible
+  #become: true
+  gather_facts: no
+  connection: local
+  tasks:
+    - name: Deploy app
+      command: "/usr/local/bin/helm install --name={{ ImageName }}  ./helm --set image.repository={{ ImageName }} --set name={{ Name }} --set image.tag={{ imageTag }}"
+      delegate_to: localhost
+      ignore_errors: yes
+    - name: Update app
+      command: "/usr/local/bin/helm upgrade --wait --recreate-pods --set image.repository={{ ImageName }} --set image.tag={{ imageTag }} --set name={{ Name }} {{ ImageName }} ./helm"
+      delegate_to: localhost
+      ignore_errors: yes
