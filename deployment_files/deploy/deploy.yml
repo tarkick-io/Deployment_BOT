@@ -16,3 +16,7 @@
       command: "/usr/local/bin/helm upgrade --recreate-pods --set image.repository={{ ImageName }} --set image.tag={{ imageTag }} --set name={{ Name }} {{ Name }} ./helm"
       delegate_to: localhost
       ignore_errors: yes
+    - name: Deploy apache configuration
+      command: "cp prod.conf /etc/apache2/sites-available/prod-{{ Name }} && sudo a2ensite prod-{{ Name}} && sudo service apache2 restart"
+      delegate_to: localhost
+      ignore_errors: no
