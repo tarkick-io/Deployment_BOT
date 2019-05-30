@@ -13,6 +13,6 @@
       delegate_to: localhost
       ignore_errors: yes
     - name: Update app
-      command: "/usr/local/bin/helm upgrade --wait --recreate-pods --set image.repository={{ ImageName }} --set image.tag={{ imageTag }} --set name={{ Name }} {{ ImageName }} ./helm"
+      command: "/usr/local/bin/helm upgrade --recreate-pods --set image.repository={{ ImageName }} --set image.tag={{ imageTag }} --set name={{ Name }} {{ Name }} ./helm"
       delegate_to: localhost
       ignore_errors: yes
