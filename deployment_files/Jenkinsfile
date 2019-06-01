@@ -24,10 +24,11 @@ pipeline {
             }
         }
         stage('Deploy') {
-            sh "sudo ansible-playbook deploy/deploy.yml --user=jenkins --extra-vars ImageName=localhost:5000/${REPO} --extra-vars imageTag=${env.BUILD_ID} --extra-vars Name=${REPO}"
-        }
-        catch (err) {
-            currentBuild.result = 'FAILURE'
+            steps {
+                script {
+                    sh "sudo ansible-playbook deploy/deploy.yml --user=jenkins --extra-vars ImageName=docker.tarkick.io/${REPO} --extra-vars imageTag=${env.BUILD_ID} --extra-vars Name=${REPO}"
+                }
+            }
         }
     }
 }
