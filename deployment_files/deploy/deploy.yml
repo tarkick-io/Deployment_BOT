@@ -20,15 +20,18 @@
       command: "cp prod.conf /etc/apache2/sites-available/prod-{{ Name }}.conf"
       delegate_to: localhost
       ignore_errors: no
+    - name: Get container IP
+      command: "sudo minikube service {{ Name }} --url"
+      register: container_ip
+      delegate_to: localhost
+      ignore_errors: no
     - name: Replace custom variables
-      command: "sed -i "s/${-- Name --}/${{{ Name }}}/g" /etc/apache2/sites-available/prod-{{ Name }}.conf"
+      command: "sudo sed -i 's#-- Ip --#{{ item }}#' /etc/apache2/sites-available/prod-tests.conf"
       delegate_to: localhost
+      with_items:
+        - "{{ container_ip.stdout_lines }}"
       ignore_errors: no
-    - name: Enable configuration
-      command: "sudo a2ensite prod-{{ Name }}"
-      delegate_to: localhost
-      ignore_errors: no
-    - name: Reload apache configurations
-      command: "sudo service apache2 reload"
+    - name: Replace custom variables 2
+      command: "sudo sed -i 's#-- Name --#{{ Name }}#' /etc/apache2/sites-available/prod-tests.conf"
       delegate_to: localhost
       ignore_errors: no
