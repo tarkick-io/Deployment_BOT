@@ -26,12 +26,22 @@
       delegate_to: localhost
       ignore_errors: no
     - name: Replace custom variables
-      command: "sudo sed -i 's#-- Ip --#{{ item }}#' /etc/apache2/sites-available/prod-tests.conf"
+      command: "sudo sed -i 's#-- Ip --#{{ item }}#' /etc/apache2/sites-available/prod-{{ Name }}.conf"
       delegate_to: localhost
       with_items:
         - "{{ container_ip.stdout_lines }}"
       ignore_errors: no
     - name: Replace custom variables 2
-      command: "sudo sed -i 's#-- Name --#{{ Name }}#' /etc/apache2/sites-available/prod-tests.conf"
+      command: "sudo sed -i 's#-- Name --#{{ Name }}#' /etc/apache2/sites-available/prod-{{ Name }}.conf"
+      delegate_to: localhost
+      with_items:
+        - "{{ container_ip.stdout_lines }}"
+      ignore_errors: no
+    - name: Activate configuration
+      command: "sudo a2ensite prod-{{ Name}}"
+      delegate_to: localhost
+      ignore_errors: no
+    - name: Reload apache
+      command: "sudo service apache2 reload"
       delegate_to: localhost
       ignore_errors: no
