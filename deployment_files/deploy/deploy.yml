@@ -9,7 +9,7 @@
   connection: local
   tasks:
     - name: Deploy app
-      command: "/usr/local/bin/helm install --name={{ ImageName }}  ./helm --set image.repository={{ ImageName }} --set name={{ Name }} --set image.tag={{ imageTag }}"
+      command: "/usr/local/bin/helm install --name={{ Name }}  ./helm --set image.repository={{ ImageName }} --set name={{ Name }} --set image.tag={{ imageTag }}"
       delegate_to: localhost
       ignore_errors: yes
     - name: Update app
@@ -17,6 +17,18 @@
       delegate_to: localhost
       ignore_errors: yes
     - name: Deploy apache configuration
-      command: "cp prod.conf /etc/apache2/sites-available/prod-{{ Name }} && sudo a2ensite prod-{{ Name}} && sudo service apache2 restart"
+      command: "cp prod.conf /etc/apache2/sites-available/prod-{{ Name }}.conf"
+      delegate_to: localhost
+      ignore_errors: no
+    - name: Replace custom variables
+      command: "sed -i "s/${-- Name --}/${{{ Name }}}/g" /etc/apache2/sites-available/prod-{{ Name }}.conf"
+      delegate_to: localhost
+      ignore_errors: no
+    - name: Enable configuration
+      command: "sudo a2ensite prod-{{ Name }}"
+      delegate_to: localhost
+      ignore_errors: no
+    - name: Reload apache configurations
+      command: "sudo service apache2 reload"
       delegate_to: localhost
       ignore_errors: no
